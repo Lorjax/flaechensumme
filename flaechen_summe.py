@@ -139,7 +139,8 @@ class Flaechensumme:
         :rtype: QAction
         """
 
-        icon = QIcon(icon_path)
+        #icon = QIcon(icon_path)
+        icon = QIcon(':/plugins/Flaechensumme/icon.png')
         action = QAction(icon, text, parent)
         action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
@@ -176,7 +177,7 @@ class Flaechensumme:
         self.initTable()
         self.dlg.comboBox.currentIndexChanged.connect(self.currentLayerChanged)
         self.dlg.attributeSelect.currentIndexChanged.connect(self.currentClassificationChanged)
-        
+       
 
 
     def unload(self):
@@ -192,7 +193,12 @@ class Flaechensumme:
 
     def run(self):
         """Run method that performs all the real work"""
+        self.layers = self.iface.legendInterface().layers()
+        self.vLayers = self.initVectorLayers()
 
+        self.initComboBox()
+        self.initAttributeSelect()
+        self.initTable()
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -205,6 +211,7 @@ class Flaechensumme:
             
     def initTable(self):
         """Initializes a tablewidget-item in order to display the results"""
+        self.dlg.tableWidget.clear()
         self.dlg.tableWidget.setRowCount(6)
         self.dlg.tableWidget.setColumnCount(6)
 
@@ -219,30 +226,40 @@ class Flaechensumme:
     def initComboBox(self):
         """Inserts all available vectorlayers in the comboBox"""
         # Test, if there are any vector layers available
-        if len(self.vLayers) == 0:
-            self.dlg.comboBox.addItem("keine geeigneten Layer vorhanden!") # no vectorlayer, set user-warning
-            self.dlg.comboBox.setEnabled(False) # disable combobox
-        else:
+        self.dlg.comboBox.clear()
+        if len(self.vLayers) > 0:
+            self.dlg.comboBox.setEnabled(True)
+            self.dlg.attributeSelect.setEnabled(True)
             layer_names = []
             for layer in self.vLayers:
                 layer_names.append(layer.name())
             self.dlg.comboBox.addItems(layer_names) # vectorlayers available, set combobox content
+        else:
+            self.dlg.comboBox.addItem("keine geeigneten Layer vorhanden!") # no vectorlayer, set user-warning
+            self.dlg.comboBox.setEnabled(False) # disable combobox
+            self.dlg.attributeSelect.setEnabled(False) # disable classification selector
+            
 
     def initAttributeSelect(self):
         """Inserts all attributes of the selected Layer into the combobox"""
-        currentLayer = self.vLayers[self.dlg.comboBox.currentIndex()]
-        currentLayerFieldNames = []
-        for field in currentLayer.pendingFields():
-            currentLayerFieldNames.append(field.name())
-        self.dlg.attributeSelect.addItems(currentLayerFieldNames)
+        self.dlg.attributeSelect.clear()
+        if len(self.vLayers) > 0:
+            currentLayer = self.vLayers[self.dlg.comboBox.currentIndex()]
+            currentLayerFieldNames = []
+            for field in currentLayer.pendingFields():
+                currentLayerFieldNames.append(field.name())
+            self.dlg.attributeSelect.addItems(currentLayerFieldNames)
 
     def initVectorLayers(self):
         """Returns all vectorlayers"""
-        layer_list = []
-        for layer in self.layers:
-            if layer.type() == 0: # check if current Layer is a vectorlayer
-                layer_list.append(layer) # if so, add it to the array
-        return layer_list
+        try:
+            layer_list = []
+            for layer in self.layers:
+                if layer.type() == 0: # check if current Layer is a vectorlayer
+                    layer_list.append(layer) # if so, add it to the array
+            return layer_list
+        except:
+            print 'Error!'
 
     def currentLayerChanged(self):
         """Triggered by the "currentIndexChanged"-event of the layer combobox"""
@@ -257,26 +274,53 @@ class Flaechensumme:
         return area /100 /100 #in ha
 
     def currentClassificationChanged(self):
+        """Handler for changing the classification. Includes calculation of the desired results."""
+        try:
+            # Reading current layer and classification out of the comboboxes
+            currentLayer = self.vLayers[self.dlg.comboBox.currentIndex()]
+            currentClassification = self.dlg.attributeSelect.currentText()
+
+            # clear table widet and initializing it again
+            self.dlg.tableWidget.clear()
+            self.initTable()
+
         
-        currentLayer = self.vLayers[self.dlg.comboBox.currentIndex()]
-        currentClassification = self.dlg.attributeSelect.currentText()
+            # saving possible classifications in a set -> Set contains only unique classifications
+            allClassifications = set()
+            for feature in currentLayer.getFeatures():
+                allClassifications.add(feature[currentClassification])
 
-        # saving possible classifications in a set -> Set contains only unique classifications
-        allClassifications = set()
-        for feature in currentLayer.getFeatures():
-            allClassifications.add(feature[currentClassification])
+            # setting row count
+            self.dlg.tableWidget.setRowCount(len(allClassifications))
 
-        # initialising filter expression
-        for classification in allClassifications:
-            request = QgsFeatureRequest()
-            request.setFilterExpression(str(currentClassification) + ' = ' + str(classification))
+            # iterator for rows
+            rowCount = 0
 
-            for feature in currentLayer.getFeatures(request):
-                print str(currentClassification) + ' = ' + str(classification) + " --- " + str(feature.geometry().area())
-                # Gibt momentan alle zum Filter gehörenden Features aus.
-                # Müssen jetzt noch aufsummiert und in die Tabelle geschrieben werden!
-                
+            # initialising filter expression
+            for classification in allClassifications:
+                request = QgsFeatureRequest()
+                request.setFilterExpression(str(currentClassification) + ' = ' + str(classification))
 
+                # helper values for storing results
+                area_total = 0
+                area_collection = []
+
+                for feature in currentLayer.getFeatures(request):
+                    print str(currentClassification) + ' = ' + str(classification) + " --- " + str(feature.geometry().area())
+                    area_total += feature.geometry().area()
+                    area_collection.append(feature.geometry().area())
+
+
+                # write out the results
+                self.dlg.tableWidget.setItem(rowCount, 0, QTableWidgetItem(str(classification)))
+                self.dlg.tableWidget.setItem(rowCount, 1, QTableWidgetItem(str(round(area_total / 10000, 2))))
+                self.dlg.tableWidget.setItem(rowCount, 2, QTableWidgetItem(str(round(min(area_collection) / 10000, 2))))
+                self.dlg.tableWidget.setItem(rowCount, 3, QTableWidgetItem(str(round(max(area_collection) / 10000, 2))))
+                self.dlg.tableWidget.setItem(rowCount, 4, QTableWidgetItem(str(round(sum(area_collection) / len(area_collection) / 10000,2))))
+                self.dlg.tableWidget.setItem(rowCount, 5, QTableWidgetItem(str(len(area_collection))))
+                rowCount += 1
+        except:
+            print 'Error!'
 
 
         # Source: http://docs.qgis.org/2.2/de/docs/user_manual/processing/console.html
