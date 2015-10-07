@@ -16,8 +16,8 @@ email=Lorjax@gmx.de
 
 about=Berechnet aus gegebenen Polygonen deren Gesamtfläche.
 
-tracker=http://github.com
-repository=http://github.com
+tracker=https://github.com/Lorjax/flaechensumme/issues
+repository=https://github.com/Lorjax/flaechensumme
 # End of mandatory metadata
 
 # Recommended items:
