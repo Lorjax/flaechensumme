@@ -313,10 +313,10 @@ class Flaechensumme:
 
                 # write out the results
                 self.dlg.tableWidget.setItem(rowCount, 0, QTableWidgetItem(str(classification)))
-                self.dlg.tableWidget.setItem(rowCount, 1, QTableWidgetItem(str(round(area_total / 10000, 2))))
-                self.dlg.tableWidget.setItem(rowCount, 2, QTableWidgetItem(str(round(min(area_collection) / 10000, 2))))
-                self.dlg.tableWidget.setItem(rowCount, 3, QTableWidgetItem(str(round(max(area_collection) / 10000, 2))))
-                self.dlg.tableWidget.setItem(rowCount, 4, QTableWidgetItem(str(round(sum(area_collection) / len(area_collection) / 10000,2))))
+                self.dlg.tableWidget.setItem(rowCount, 1, QTableWidgetItem(str(round(area_total / 10000, 3))))
+                self.dlg.tableWidget.setItem(rowCount, 2, QTableWidgetItem(str(round(min(area_collection) / 10000, 3))))
+                self.dlg.tableWidget.setItem(rowCount, 3, QTableWidgetItem(str(round(max(area_collection) / 10000, 3))))
+                self.dlg.tableWidget.setItem(rowCount, 4, QTableWidgetItem(str(round(sum(area_collection) / len(area_collection) / 10000,3))))
                 self.dlg.tableWidget.setItem(rowCount, 5, QTableWidgetItem(str(len(area_collection))))
                 rowCount += 1
         except:
