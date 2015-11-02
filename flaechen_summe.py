@@ -21,12 +21,13 @@
  ***************************************************************************/
 """
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
-from PyQt4.QtGui import QAction, QIcon, QTableWidgetItem
+from PyQt4.QtGui import QAction, QIcon, QTableWidgetItem, QApplication
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
 from flaechen_summe_dialog import FlaechensummeDialog
 import os.path
+import os
 import processing
 from qgis.core import QgsFeatureRequest
 
@@ -177,6 +178,7 @@ class Flaechensumme:
         self.initTable()
         self.dlg.comboBox.currentIndexChanged.connect(self.currentLayerChanged)
         self.dlg.attributeSelect.currentIndexChanged.connect(self.currentClassificationChanged)
+        self.dlg.button_copyToClip.clicked.connect(self.copyToClipboard)
        
 
 
@@ -259,7 +261,7 @@ class Flaechensumme:
                     layer_list.append(layer) # if so, add it to the array
             return layer_list
         except:
-            print 'Error!'
+            print 'initVectorLayers'
 
     def currentLayerChanged(self):
         """Triggered by the "currentIndexChanged"-event of the layer combobox"""
@@ -320,7 +322,39 @@ class Flaechensumme:
                 self.dlg.tableWidget.setItem(rowCount, 5, QTableWidgetItem(str(len(area_collection))))
                 rowCount += 1
         except:
-            print 'Error!'
+            print 'currentClassificationChanged'
+
+    def copyToClipboard(self):
+        # check if there is anything selected
+        if len(self.dlg.tableWidget.selectedItems()) == 0:
+            return
+
+        clipboard = QApplication.clipboard()
+        text = ''
+        columns = self.dlg.tableWidget.columnCount()
+        selectionTopEnd = self.dlg.tableWidget.selectedRanges()[0].topRow()
+        selectionBottomEnd = self.dlg.tableWidget.selectedRanges()[0].bottomRow()
+
+        # reading headers
+        for i in range(columns):
+            text += self.dlg.tableWidget.horizontalHeaderItem(i).text()
+            if i != (columns - 1):
+                text += chr(9)
+        text += chr(13)
+
+        # reading contents
+        for i in range(selectionTopEnd, selectionBottomEnd + 1):
+            for j in range(columns):
+                text += self.dlg.tableWidget.item(i,j).text()
+                if j != (columns - 1):
+                    text += chr(9)
+
+            if i != selectionBottomEnd:
+                text += chr(13)
+
+        # set text
+        clipboard.setText(text)
+
 
 
         # Source: http://docs.qgis.org/2.2/de/docs/user_manual/processing/console.html

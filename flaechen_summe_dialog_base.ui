@@ -10,6 +10,9 @@
     <height>504</height>
    </rect>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::ActionsContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string>Flächensumme</string>
   </property>
@@ -26,7 +29,10 @@
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons">
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Close</set>
+   </property>
+   <property name="centerButtons">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QComboBox" name="comboBox">
@@ -77,11 +83,23 @@
    <property name="cursor" stdset="0">
     <cursorShape>ArrowCursor</cursorShape>
    </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::ActionsContextMenu</enum>
+   </property>
+   <property name="editTriggers">
+    <set>QAbstractItemView::NoEditTriggers</set>
+   </property>
+   <property name="dragEnabled">
+    <bool>false</bool>
+   </property>
+   <property name="dragDropMode">
+    <enum>QAbstractItemView::NoDragDrop</enum>
+   </property>
    <property name="alternatingRowColors">
     <bool>true</bool>
    </property>
    <property name="selectionMode">
-    <enum>QAbstractItemView::MultiSelection</enum>
+    <enum>QAbstractItemView::ContiguousSelection</enum>
    </property>
    <property name="selectionBehavior">
     <enum>QAbstractItemView::SelectRows</enum>
@@ -96,7 +114,7 @@
     <bool>true</bool>
    </attribute>
    <attribute name="horizontalHeaderCascadingSectionResizes">
-    <bool>true</bool>
+    <bool>false</bool>
    </attribute>
    <attribute name="horizontalHeaderDefaultSectionSize">
     <number>150</number>
@@ -142,6 +160,19 @@
      <width>251</width>
      <height>33</height>
     </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_copyToClip">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>450</y>
+     <width>231</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Auswahl in Zwischenablage kopieren</string>
    </property>
   </widget>
  </widget>
