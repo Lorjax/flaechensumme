@@ -7,14 +7,14 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Flächensumme
+name=Flaechensumme
 qgisMinimumVersion=2.0
-description=Berechnet Flächensummen
+description=Berechnet Flaechensummen
 version=0.1
 author=Max G.
 email=Lorjax@gmx.de
 
-about=Berechnet aus gegebenen Polygonen deren Gesamtfläche.
+about=Berechnet aus gegebenen Polygonen deren Gesamtflaeche.
 
 tracker=https://github.com/Lorjax/flaechensumme/issues
 repository=https://github.com/Lorjax/flaechensumme

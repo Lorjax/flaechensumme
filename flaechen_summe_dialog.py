@@ -3,7 +3,7 @@
 /***************************************************************************
  FlaechensummeDialog
                                  A QGIS plugin
- Berechnet Flächensummen
+ Berechnet Flaechensummen
                              -------------------
         begin                : 2015-09-25
         git sha              : $Format:%H$

@@ -3,7 +3,7 @@
 /***************************************************************************
  Flaechensumme
                                  A QGIS plugin
- Berechnet Flächensummen
+ Berechnet Flaechensummen
                               -------------------
         begin                : 2015-09-25
         git sha              : $Format:%H$
@@ -66,7 +66,7 @@ class Flaechensumme:
 
         # Declare instance attributes
         self.actions = []
-        self.menu = self.tr(u'&Flächensumme')
+        self.menu = self.tr(u'&Flaechensumme')
         # TODO: We are going to let the user set this up in a future iteration
         self.toolbar = self.iface.addToolBar(u'Flaechensumme')
         self.toolbar.setObjectName(u'Flaechensumme')
@@ -170,7 +170,7 @@ class Flaechensumme:
         icon_path = ':/plugins/Flaechensumme/icon.png'
         self.add_action(
             icon_path,
-            text=self.tr(u'Flächensummen...'),
+            text=self.tr(u'Flaechensummen...'),
             callback=self.run,
             parent=self.iface.mainWindow())
         self.initComboBox()
@@ -186,7 +186,7 @@ class Flaechensumme:
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
             self.iface.removePluginMenu(
-                self.tr(u'&Flächensumme'),
+                self.tr(u'&Flaechensumme'),
                 action)
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
@@ -218,11 +218,11 @@ class Flaechensumme:
         self.dlg.tableWidget.setColumnCount(6)
 
         self.dlg.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Jahr"))
-        self.dlg.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Fläche [ha]".decode('utf8')))
-        self.dlg.tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("kleinste Fläche [ha]".decode('utf8')))
-        self.dlg.tableWidget.setHorizontalHeaderItem(3, QTableWidgetItem("größte Fläche [ha]".decode('utf8')))
-        self.dlg.tableWidget.setHorizontalHeaderItem(4, QTableWidgetItem("durchschnittl. Fläche [ha]".decode('utf8')))
-        self.dlg.tableWidget.setHorizontalHeaderItem(5, QTableWidgetItem("Anzahl bearbeiteter Flächen".decode('utf8')))
+        self.dlg.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Flaeche [ha]".decode('utf8')))
+        self.dlg.tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("kleinste Flaeche [ha]".decode('utf8')))
+        self.dlg.tableWidget.setHorizontalHeaderItem(3, QTableWidgetItem("größte Flaeche [ha]".decode('utf8')))
+        self.dlg.tableWidget.setHorizontalHeaderItem(4, QTableWidgetItem("durchschnittl. Flaeche [ha]".decode('utf8')))
+        self.dlg.tableWidget.setHorizontalHeaderItem(5, QTableWidgetItem("Anzahl bearbeiteter Flaechen".decode('utf8')))
 
 
     def initComboBox(self):

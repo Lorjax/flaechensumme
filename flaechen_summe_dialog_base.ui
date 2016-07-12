@@ -14,7 +14,7 @@
    <enum>Qt::ActionsContextMenu</enum>
   </property>
   <property name="windowTitle">
-   <string>Flächensumme</string>
+   <string>Flaechensumme</string>
   </property>
   <widget class="QDialogButtonBox" name="button_box">
    <property name="geometry">
@@ -55,7 +55,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Layer auswählen:</string>
+    <string>Layer auswaehlen:</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
