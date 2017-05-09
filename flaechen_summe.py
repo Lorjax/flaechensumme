@@ -71,6 +71,8 @@ class Flaechensumme:
         self.toolbar = self.iface.addToolBar(u'Flaechensumme')
         self.toolbar.setObjectName(u'Flaechensumme')
 
+        # Definition of own attributes
+        # layers for all layers in project, vLayers for all vectorlayers in project
         self.layers = self.iface.legendInterface().layers()
         self.vLayers = self.initVectorLayers()
 
@@ -176,9 +178,7 @@ class Flaechensumme:
         self.initComboBox()
         self.initAttributeSelect()
         self.initTable()
-        self.dlg.comboBox.currentIndexChanged.connect(self.currentLayerChanged)
-        self.dlg.attributeSelect.currentIndexChanged.connect(self.currentClassificationChanged)
-        self.dlg.button_copyToClip.clicked.connect(self.copyToClipboard)
+        
        
 
 
@@ -201,6 +201,9 @@ class Flaechensumme:
         self.initComboBox()
         self.initAttributeSelect()
         self.initTable()
+        self.dlg.comboBox.currentIndexChanged.connect(self.currentLayerChanged)
+        self.dlg.attributeSelect.currentIndexChanged.connect(self.currentClassificationChanged)
+        self.dlg.button_copyToClip.clicked.connect(self.copyToClipboard)
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
@@ -217,7 +220,7 @@ class Flaechensumme:
         self.dlg.tableWidget.setRowCount(6)
         self.dlg.tableWidget.setColumnCount(6)
 
-        self.dlg.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem("Jahr"))
+        self.dlg.tableWidget.setHorizontalHeaderItem(0, QTableWidgetItem(""))
         self.dlg.tableWidget.setHorizontalHeaderItem(1, QTableWidgetItem("Flaeche [ha]".decode('utf8')))
         self.dlg.tableWidget.setHorizontalHeaderItem(2, QTableWidgetItem("kleinste Flaeche [ha]".decode('utf8')))
         self.dlg.tableWidget.setHorizontalHeaderItem(3, QTableWidgetItem("größte Flaeche [ha]".decode('utf8')))
@@ -290,14 +293,17 @@ class Flaechensumme:
             # saving possible classifications in a set -> Set contains only unique classifications
             allClassifications = set()
             for feature in currentLayer.getFeatures():
-                allClassifications.add(feature[currentClassification])
+                # 2017-05-09: added check if feature holds a value in classification field
+                if feature[currentClassification]:
+                    allClassifications.add(str(feature[currentClassification]))
+            print allClassifications
 
             # setting row count
             self.dlg.tableWidget.setRowCount(len(allClassifications))
 
             # iterator for rows
             rowCount = 0
-
+            
             # initialising filter expression
             for classification in allClassifications:
                 request = QgsFeatureRequest()
@@ -321,6 +327,7 @@ class Flaechensumme:
                 self.dlg.tableWidget.setItem(rowCount, 4, QTableWidgetItem(str(round(sum(area_collection) / len(area_collection) / 10000,3))))
                 self.dlg.tableWidget.setItem(rowCount, 5, QTableWidgetItem(str(len(area_collection))))
                 rowCount += 1
+            
         except:
             print 'currentClassificationChanged'
 
